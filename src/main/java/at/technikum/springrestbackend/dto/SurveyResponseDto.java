@@ -4,6 +4,7 @@
 // imports & packages
 package at.technikum.springrestbackend.dto;
 
+import at.technikum.springrestbackend.entity.SurveyStatus;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
@@ -26,9 +27,9 @@ public class SurveyResponseDto {
     private String title;
     private String description;
     private String coverImage;
-    private String status;
+    private SurveyStatus status;
     private String creatorUsername;
-    private List<QuestionResponseDto> questions;
+    private List<QuestionsResponseDto> questions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

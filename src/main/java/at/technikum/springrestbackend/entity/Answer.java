@@ -33,7 +33,7 @@ public class Answer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selected_option_id", nullable = false)
-    private Option slectedOption;
+    private Option selectedOption;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_response_id", nullable = false)

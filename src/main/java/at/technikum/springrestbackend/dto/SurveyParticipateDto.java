@@ -5,6 +5,7 @@
 package at.technikum.springrestbackend.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,11 @@ import java.util.UUID;
 //#######################################################################
 //#######################################################################
 // class
-public class ParticipateDto {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class SurveyParticipateDto {
 
     @NotEmpty(message = "Answer is required")
     private Map<UUID, List<UUID>> answers;

@@ -36,6 +36,10 @@ public class Question {
     @Column(nullable = false)
     private QuestionType type;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_id", nullable = false)
+    private Survey survey;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options = new ArrayList<>();
 }
