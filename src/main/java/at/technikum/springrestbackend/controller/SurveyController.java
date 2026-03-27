@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,7 +49,8 @@ public class SurveyController {
 
     //POST - create survey
     @PostMapping
-    public ResponseEntity<SurveyResponseDto> create(@Valid @RequestBody SurveyCreateDto dto, @RequestHeader("userId") UUID creatorId) {
+    public ResponseEntity<SurveyResponseDto> create(@Valid @RequestBody SurveyCreateDto dto, Authentication authentication) {
+        UUID creatorId = (UUID) authentication.getPrincipal();
         SurveyResponseDto created = surveyService.create(dto, creatorId);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -75,7 +77,8 @@ public class SurveyController {
 
     //POST - participate
     @PostMapping("/{id}/participate")
-    public ResponseEntity<Void> participate(@PathVariable UUID id, @RequestParam UUID userId, @Valid @RequestBody SurveyParticipateDto dto) {
+    public ResponseEntity<Void> participate(@PathVariable UUID id, @Valid @RequestBody SurveyParticipateDto dto, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         surveyService.participate(id, userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

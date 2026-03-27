@@ -11,7 +11,9 @@ import at.technikum.springrestbackend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +38,8 @@ public class UserController {
 
     //GET - single user
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getById(@PathVariable UUID id){
+    public ResponseEntity<UserResponseDto> getById(@PathVariable UUID id, Authentication authentication){
+        checkOwnerOrAdmin(id, authentication);
         return ResponseEntity.ok(userService.findById(id));
     }
 
@@ -49,14 +52,24 @@ public class UserController {
 
     //PUT - update user
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDto dto){
+    public ResponseEntity<UserResponseDto> update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDto dto, Authentication authentication){
+        checkOwnerOrAdmin(id, authentication);
         return ResponseEntity.ok(userService.update(id, dto));
     }
 
-    //DELETE - delete user
+    //DELETE - delete user [Admin]
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    //check
+    private void checkOwnerOrAdmin(UUID id, Authentication authentication){
+        UUID currentUserId = (UUID) authentication.getPrincipal();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if(!isAdmin && !id.equals(currentUserId)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
+        }
     }
 }
