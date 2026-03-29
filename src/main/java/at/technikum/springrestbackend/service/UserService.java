@@ -103,4 +103,8 @@ public class UserService {
         return dto;
     }
 
+    public User saveEntity(User user) {
+        return userRepository.save(user);
+    }
+
 }

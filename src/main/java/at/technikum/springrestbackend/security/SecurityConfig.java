@@ -41,8 +41,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/surveys").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
                         // Swagger/openAPI
-                        .requestMatchers("/swagger.html", "swagger-ui/**", "/v3/api-docs/**", "/api/**").permitAll()
+                        .requestMatchers("/swagger.html", "swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // Admin only
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
