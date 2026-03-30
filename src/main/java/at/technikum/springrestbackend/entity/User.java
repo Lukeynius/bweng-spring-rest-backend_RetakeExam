@@ -40,7 +40,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 3) //only 3 letters bc of country code and not country name
+    @Column(nullable = false, length = 2) //only 2 letters bc of country code and not country name
     private String country;
 
     @Column(name = "profile_picture")

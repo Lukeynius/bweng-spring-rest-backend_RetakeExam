@@ -29,6 +29,7 @@ import java.util.UUID;
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtValidator jwtValidator;
 
     @Override
     protected void doFilterInternal(
@@ -37,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
             @NonNull FilterChain filterChain
     )throws ServletException, IOException {
         String token = extractTokenFromRequest(request);
-        if(token != null && jwtTokenProvider.validateToken(token)){
+        if(token != null && jwtValidator.validateToken(token)){
             UUID userId = jwtTokenProvider.getUserIdFromToken(token);
             String username = jwtTokenProvider.getUsernameFromToken(token);
             String role = jwtTokenProvider.getRoleFromToken(token);

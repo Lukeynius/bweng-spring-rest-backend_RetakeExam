@@ -34,7 +34,7 @@ public class UserRegisterDto {
     )
     private String password;
 
-    @NotBlank(message = "Country is required")
-    @Size(min = 2, max = 3, message = "Country must be a valid country code")
+    @NotBlank(message = "Country code is required")
+    @Pattern(regexp = "^[A-Z]{2}$", message = "Country must be a valid country code")
     private String country;
 }

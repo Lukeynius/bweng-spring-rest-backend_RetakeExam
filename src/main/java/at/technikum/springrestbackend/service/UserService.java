@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 //#######################################################################
@@ -52,6 +54,10 @@ public class UserService {
         }
         if(userRepository.existsByEmail(dto.getEmail())){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
+        final Set<String> ISO_COUNTRIES = Set.of(Locale.getISOCountries());
+        if(!ISO_COUNTRIES.contains(dto.getCountry())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid country code");
         }
         User user = new User();
         user.setUsername(dto.getUsername());

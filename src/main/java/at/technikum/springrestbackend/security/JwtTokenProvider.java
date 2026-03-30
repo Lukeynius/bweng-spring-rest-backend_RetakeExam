@@ -61,16 +61,7 @@ public class JwtTokenProvider {
         return claims.get("role", String.class);
     }
 
-    public boolean validateToken(String token){
-        try{
-            parseClaims(token);
-            return true;
-        } catch (Exception e){
-            return false;
-        }
-    }
-
-    private Claims parseClaims(String token){
+    Claims parseClaims(String token){
         return Jwts.parser()
                 .verifyWith(key)
                 .build()
