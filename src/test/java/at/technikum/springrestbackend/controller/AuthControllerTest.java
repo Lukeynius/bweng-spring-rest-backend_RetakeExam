@@ -73,4 +73,38 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.role").value("USER"));
     }
+
+    @Test
+    void login_invalidUsername_returnsUnaothorized() throws Exception {
+        when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(Map.of("username", "unknown", "password", "Password1"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void login_wrongPassword_returnsUnaothorized() throws Exception {
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername("testuser");
+        user.setPassword("hashedPassword");
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("WrongPassword", "hashedPassword")).thenReturn(false);
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(Map.of("username", "testuser", "password", "WrongPassword"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void login_missingFields_returnsBadRequest() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
 }
