@@ -7,6 +7,7 @@ package at.technikum.springrestbackend.controller;
 
 import at.technikum.springrestbackend.dto.UserResponseDto;
 import at.technikum.springrestbackend.entity.Role;
+import at.technikum.springrestbackend.security.JwtAuthenticationFilter;
 import at.technikum.springrestbackend.security.JwtTokenProvider;
 import at.technikum.springrestbackend.security.SecurityConfig;
 import at.technikum.springrestbackend.service.UserService;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //#######################################################################
 // class
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 public class UserControllerTest {
 
     @Autowired

@@ -51,7 +51,7 @@ public class UserServiceTest {
         testId = UUID.randomUUID();
         testUser = new User();
         testUser.setId(testId);
-        testUser.setUsername("testUser");
+        testUser.setUsername("testuser");
         testUser.setEmail("test@example.com");
         testUser.setPassword("hashedPassword");
         testUser.setCountry("AT");
@@ -90,7 +90,7 @@ public class UserServiceTest {
 
         when(userRepository.existsByUsername("newuser")).thenReturn(false);
         when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("Passwor1")).thenReturn("hashedPw");
+        when(passwordEncoder.encode("Password1")).thenReturn("hashedPw");
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
         UserResponseDto result = userService.register(dto);

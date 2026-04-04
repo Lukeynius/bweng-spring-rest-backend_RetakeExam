@@ -7,6 +7,7 @@ package at.technikum.springrestbackend.controller;
 
 import at.technikum.springrestbackend.dto.SurveyResponseDto;
 import at.technikum.springrestbackend.entity.SurveyStatus;
+import at.technikum.springrestbackend.security.JwtAuthenticationFilter;
 import at.technikum.springrestbackend.security.JwtTokenProvider;
 import at.technikum.springrestbackend.security.SecurityConfig;
 import at.technikum.springrestbackend.service.SurveyService;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //#######################################################################
 // class
 @WebMvcTest(SurveyController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 public class SurveyControllerTest {
 
     @Autowired

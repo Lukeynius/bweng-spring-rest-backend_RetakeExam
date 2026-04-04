@@ -11,6 +11,7 @@ import at.technikum.springrestbackend.dto.SurveyParticipateDto;
 import at.technikum.springrestbackend.dto.SurveyResponseDto;
 import at.technikum.springrestbackend.entity.*;
 import at.technikum.springrestbackend.repository.AnswerRepository;
+import at.technikum.springrestbackend.repository.OptionRepository;
 import at.technikum.springrestbackend.repository.SurveyRepository;
 import at.technikum.springrestbackend.repository.SurveyResponseRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +47,9 @@ public class SurveyServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private OptionRepository optionRepository;
 
     @InjectMocks
     private SurveyService surveyService;
@@ -164,6 +168,7 @@ public class SurveyServiceTest {
         when(userService.findEntityById(userId)).thenReturn(testUser);
         when(surveyResponseRepository.existsByUserIdAndSurveyId(userId, surveyId)).thenReturn(false);
         when(surveyResponseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(optionRepository.findById(optionId)).thenReturn(Optional.of(option));
 
         surveyService.participate(surveyId, userId, dto);
         verify(surveyResponseRepository).save(any());
@@ -177,7 +182,6 @@ public class SurveyServiceTest {
         dto.setAnswers(Map.of());
 
         when(surveyRepository.findById(surveyId)).thenReturn(Optional.of(testSurvey));
-        when(userService.findEntityById(userId)).thenReturn(testUser);
         when(surveyResponseRepository.existsByUserIdAndSurveyId(userId, surveyId)).thenReturn(true);
 
         assertThrows(ResponseStatusException.class, ()->surveyService.participate(surveyId, userId, dto));
@@ -189,7 +193,6 @@ public class SurveyServiceTest {
         SurveyParticipateDto dto = new SurveyParticipateDto();
 
         when(surveyRepository.findById(surveyId)).thenReturn(Optional.of(testSurvey));
-        when(userService.findEntityById(userId)).thenReturn(testUser);
 
         assertThrows(ResponseStatusException.class, ()->surveyService.participate(surveyId, userId, dto));
     }

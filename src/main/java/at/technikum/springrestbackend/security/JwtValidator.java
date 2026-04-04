@@ -5,7 +5,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtValidator {
 
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public JwtValidator(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     public boolean validateToken(String token){
         try{

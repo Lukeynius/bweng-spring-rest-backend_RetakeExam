@@ -24,9 +24,10 @@ public class JwtValidatorTest {
     private JwtValidator jwtValidator;
 
     @BeforeEach
-    void setUp(){
-        String secret = "testSecretKeyThatIsAtLeast256BitsLong" + "ForHS256AlgorithmTestTestTest";
+    void setUp() {
+        String secret = "testSecretKeyThatIsAtLeast256Bits..." + "ForHS256AlgorithmTestTestTest";
         jwtTokenProvider = new JwtTokenProvider(secret, 86400000);
+        jwtValidator = new JwtValidator(jwtTokenProvider);
     }
 
     @Test
