@@ -9,6 +9,7 @@ import at.technikum.springrestbackend.dto.UserResponseDto;
 import at.technikum.springrestbackend.entity.Role;
 import at.technikum.springrestbackend.security.JwtAuthenticationFilter;
 import at.technikum.springrestbackend.security.JwtTokenProvider;
+import at.technikum.springrestbackend.security.JwtValidator;
 import at.technikum.springrestbackend.security.SecurityConfig;
 import at.technikum.springrestbackend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -51,6 +53,9 @@ public class UserControllerTest {
 
     @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private JwtValidator jwtValidator;
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -90,6 +95,7 @@ public class UserControllerTest {
 
         when(userService.register(any())).thenReturn(responseDto);
         mockMvc.perform(post("/api/users/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of(
                                 "username", "newuser", "email","new@example.com","password","Password1","country","AT"
@@ -101,20 +107,22 @@ public class UserControllerTest {
     @Test
     void register_invalidEmail_returnsBadRequest() throws Exception{
         mockMvc.perform(post("/api/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of(
-                        "username", "newuser", "email","invalidmail","password","Password1","country","AT"
-                ))))
-                .andExpect(status().isBadRequest());
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "username", "newuser", "email","invalidmail","password","Password1","country","AT"
+                        ))))
+                        .andExpect(status().isBadRequest());
     }
 
     @Test
     void register_shortUsername_returnsBadRequest() throws Exception{
         mockMvc.perform(post("/api/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of(
-                        "username", "ab", "email","new@example.com","password","Password1","country","AT"
-                ))))
-                .andExpect(status().isBadRequest());
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "username", "ab", "email","new@example.com","password","Password1","country","AT"
+                        ))))
+                        .andExpect(status().isBadRequest());
     }
 }

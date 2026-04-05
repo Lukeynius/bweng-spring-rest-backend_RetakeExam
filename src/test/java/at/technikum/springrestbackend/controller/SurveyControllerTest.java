@@ -9,6 +9,7 @@ import at.technikum.springrestbackend.dto.SurveyResponseDto;
 import at.technikum.springrestbackend.entity.SurveyStatus;
 import at.technikum.springrestbackend.security.JwtAuthenticationFilter;
 import at.technikum.springrestbackend.security.JwtTokenProvider;
+import at.technikum.springrestbackend.security.JwtValidator;
 import at.technikum.springrestbackend.security.SecurityConfig;
 import at.technikum.springrestbackend.service.SurveyService;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ public class SurveyControllerTest {
 
     @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private JwtValidator jwtValidator;
 
     @Test
     void getAll_anonymous_returnsOk() throws Exception{

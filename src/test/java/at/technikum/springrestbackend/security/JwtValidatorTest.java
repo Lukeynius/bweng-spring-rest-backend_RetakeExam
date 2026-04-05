@@ -6,6 +6,7 @@ package at.technikum.springrestbackend.security;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // class
 public class JwtValidatorTest {
 
+    @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
     private JwtValidator jwtValidator;
 

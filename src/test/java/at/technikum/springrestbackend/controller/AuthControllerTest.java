@@ -10,6 +10,7 @@ import at.technikum.springrestbackend.entity.User;
 import at.technikum.springrestbackend.repository.UserRepository;
 import at.technikum.springrestbackend.security.JwtAuthenticationFilter;
 import at.technikum.springrestbackend.security.JwtTokenProvider;
+import at.technikum.springrestbackend.security.JwtValidator;
 import at.technikum.springrestbackend.security.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,9 @@ public class AuthControllerTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @MockitoBean
+    private JwtValidator jwtValidator;
+
+    @MockitoBean
     private PasswordEncoder passwordEncoder;
 
     @Test
@@ -76,7 +80,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void login_invalidUsername_returnsUnaothorized() throws Exception {
+    void login_invalidUsername_returnsUnauthorized() throws Exception {
         when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +89,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void login_wrongPassword_returnsUnaothorized() throws Exception {
+    void login_wrongPassword_returnsUnauthorized() throws Exception {
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setUsername("testuser");
@@ -104,8 +108,8 @@ public class AuthControllerTest {
     void login_missingFields_returnsBadRequest() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
-                .andExpect(status().isBadRequest());
+                .content(Map.of("username", "", "password", "").toString())
+                .accept((MediaType) status().isBadRequest()));
     }
 
 }

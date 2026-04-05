@@ -7,6 +7,7 @@ package at.technikum.springrestbackend.security;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.UUID;
 
@@ -18,13 +19,16 @@ import static org.junit.jupiter.api.Assertions.*;
 // class
 public class JwtTokenProviderTest {
 
+    @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
     private JwtValidator jwtValidator;
 
     @BeforeEach
     void setUp(){
         String secret = "testSecretKeyThatIsAtLeast256BitsLong" + "ForHS256AlgorithmTestTestTest";
-        jwtTokenProvider = new JwtTokenProvider(secret, 86400000);
+        this.jwtTokenProvider = new JwtTokenProvider(secret, 86400000);
     }
 
     @Test
