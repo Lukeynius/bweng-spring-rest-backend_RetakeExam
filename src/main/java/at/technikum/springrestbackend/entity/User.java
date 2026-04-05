@@ -44,7 +44,7 @@ public class User {
     private String country;
 
     @Column(name = "profile_picture")
-    private String ProfilePicture;
+    private String profilePicture;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

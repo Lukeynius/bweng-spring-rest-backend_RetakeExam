@@ -107,9 +107,9 @@ public class AuthControllerTest {
     @Test
     void login_missingFields_returnsBadRequest() throws Exception {
         mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(Map.of("username", "", "password", "").toString())
-                .accept((MediaType) status().isBadRequest()));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
     }
 
 }

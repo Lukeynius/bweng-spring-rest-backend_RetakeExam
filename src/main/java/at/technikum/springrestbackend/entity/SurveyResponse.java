@@ -20,7 +20,12 @@ import java.util.UUID;
 //#######################################################################
 //class
 @Entity
-@Table(name = "survey_responses", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "survey_id"}))
+@Table(
+        name = "survey_responses",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"user_id", "survey_id"}
+        )
+)
 @Getter
 @Setter
 @NoArgsConstructor

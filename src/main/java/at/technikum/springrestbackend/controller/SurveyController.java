@@ -34,7 +34,9 @@ public class SurveyController {
 
     //GET - all surveys
     @GetMapping
-    public ResponseEntity<List<SurveyResponseDto>> getAll(@RequestParam(required = false) SurveyStatus status) {
+    public ResponseEntity<List<SurveyResponseDto>> getAll(
+            @RequestParam(required = false) SurveyStatus status
+    ){
         if (status != null) {
             return ResponseEntity.ok(surveyService.findActive());
         }
@@ -42,14 +44,17 @@ public class SurveyController {
     }
 
     //GET - survey details
-    @GetMapping("/{id")
+    @GetMapping("/{id}")
     public ResponseEntity<SurveyResponseDto> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(surveyService.findById(id));
     }
 
     //POST - create survey
     @PostMapping
-    public ResponseEntity<SurveyResponseDto> create(@Valid @RequestBody SurveyCreateDto dto, Authentication authentication) {
+    public ResponseEntity<SurveyResponseDto> create(
+            @Valid @RequestBody SurveyCreateDto dto,
+            Authentication authentication
+    ){
         UUID creatorId = (UUID) authentication.getPrincipal();
         SurveyResponseDto created = surveyService.create(dto, creatorId);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -57,13 +62,19 @@ public class SurveyController {
 
     //PUT - update survey [ADMIN]
     @PutMapping("/{id}")
-    public ResponseEntity<SurveyResponseDto> update(@PathVariable UUID id, @Valid @RequestBody SurveyCreateDto dto) {
+    public ResponseEntity<SurveyResponseDto> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody SurveyCreateDto dto
+    ){
         return ResponseEntity.ok(surveyService.update(id, dto));
     }
 
     //PATCH - update survey status
     @PatchMapping("/{id}/status")
-    public ResponseEntity<SurveyResponseDto> updateStatus(@PathVariable UUID id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<SurveyResponseDto> updateStatus(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> body
+    ){
         SurveyStatus status = SurveyStatus.valueOf(body.get("status"));
         return ResponseEntity.ok(surveyService.updateStatus(id, status));
     }
@@ -77,7 +88,11 @@ public class SurveyController {
 
     //POST - participate
     @PostMapping("/{id}/participate")
-    public ResponseEntity<Void> participate(@PathVariable UUID id, @Valid @RequestBody SurveyParticipateDto dto, Authentication authentication) {
+    public ResponseEntity<Void> participate(
+            @PathVariable UUID id,
+            @Valid @RequestBody SurveyParticipateDto dto,
+            Authentication authentication
+    ){
         UUID userId = (UUID) authentication.getPrincipal();
         surveyService.participate(id, userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();

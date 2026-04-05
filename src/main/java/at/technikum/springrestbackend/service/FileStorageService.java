@@ -30,12 +30,19 @@ public class FileStorageService {
     @Value("${minio.bucket-name}")
     private String bucketName;
 
-    private static final List<String> ALLOWED_IMAGES_TYPES = List.of("image/jpeg", "image/png", "image/gif", "Image/webp");
+    private static final List<String> ALLOWED_IMAGES_TYPES = List.of(
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "Image/webp"
+    );
 
     public String uploadFile(MultipartFile file, String folder){
         validateFile(file);
         ensureBucketExists();
-        String fileName = folder + "/" + UUID.randomUUID() +getExtension(file.getOriginalFilename());
+        String fileName = folder + "/" + UUID.randomUUID() +getExtension(
+                file.getOriginalFilename()
+        );
         try{
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -46,7 +53,10 @@ public class FileStorageService {
                             .build()
             );
         } catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload file: " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to upload file: " + e.getMessage()
+            );
         }
         return fileName;
     }
@@ -60,7 +70,10 @@ public class FileStorageService {
                             .build()
             );
         } catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found: " + fileName);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "File not found: " + fileName
+            );
         }
     }
 
@@ -73,7 +86,10 @@ public class FileStorageService {
                             .build()
             );
         } catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete file: " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to delete file: " + e.getMessage()
+            );
         }
     }
 
@@ -82,19 +98,27 @@ public class FileStorageService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File is empty");
         }
         if(!ALLOWED_IMAGES_TYPES.contains(file.getContentType())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only image files are allowed (JPEG, PNG, GIF, WebP)");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Only image files are allowed (JPEG, PNG, GIF, WebP)"
+            );
         }
     }
 
     private void ensureBucketExists(){
         try{
-            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            boolean exists = minioClient.bucketExists(
+                    BucketExistsArgs.builder().bucket(bucketName).build()
+            );
             if(!exists){
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             }
         } catch (Exception e){
             if(!e.getMessage().contains("Bucket already exists")){
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create bucket: " + e.getMessage());
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Failed to create bucket: " + e.getMessage()
+                );
             }
         }
     }

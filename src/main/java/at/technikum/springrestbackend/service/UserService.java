@@ -45,7 +45,10 @@ public class UserService {
 
     public User findEntityById(UUID id){
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found")
+                );
     }
 
     public UserResponseDto register(UserRegisterDto dto){
@@ -71,14 +74,23 @@ public class UserService {
     public UserResponseDto update(UUID id, UserUpdateDto dto){
         User user = findEntityById(id);
         if(dto.getUsername() != null){
-            if(userRepository.existsByUsername(dto.getUsername()) && !user.getUsername().equals(dto.getUsername())){
+            if(
+                    userRepository.existsByUsername(dto.getUsername()) &&
+                            !user.getUsername().equals(dto.getUsername())
+            ){
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
             }
             user.setUsername(dto.getUsername());
         }
         if(dto.getEmail() != null){
-            if(userRepository.existsByEmail(dto.getEmail()) && !user.getEmail().equals(dto.getEmail())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+            if(
+                    userRepository.existsByEmail(dto.getEmail()) &&
+                            !user.getEmail().equals(dto.getEmail())
+            ){
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Email already exists"
+                );
             }
             user.setEmail(dto.getEmail());
         }

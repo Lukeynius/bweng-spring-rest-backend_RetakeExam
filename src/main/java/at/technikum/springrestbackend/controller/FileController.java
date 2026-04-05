@@ -37,7 +37,10 @@ public class FileController {
 
     //POST - upload profile picture
     @PostMapping("/profile-picture")
-    public ResponseEntity<Map<String, String>> uploadProfilePicture(@RequestParam("file") MultipartFile file, Authentication authentication){
+    public ResponseEntity<Map<String, String>> uploadProfilePicture(
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication
+    ){
         UUID userId = (UUID) authentication.getPrincipal();
         String fileName = fileStorageService.uploadFile(file, "profile-picture");
         //delete old PP, if existing
@@ -56,10 +59,18 @@ public class FileController {
 
     //POST - upload survey picture [Admin]
     @PostMapping("/survey-cover/{surveyId}")
-    public ResponseEntity<Map<String, String>> uploadSurveyPicture(@PathVariable UUID surveyId, @RequestParam("file") MultipartFile file, Authentication authentication){
-        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    public ResponseEntity<Map<String, String>> uploadSurveyPicture(
+            @PathVariable UUID surveyId,
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication
+    ){
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(
+                a -> a.getAuthority().equals("ROLE_ADMIN")
+        );
         if(!isAdmin){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "You are not allowed to access this resource"
+            );
         }
         String fileName = fileStorageService.uploadFile(file, "survey-cover");
         return ResponseEntity
@@ -69,7 +80,10 @@ public class FileController {
 
     //GET - download file
     @GetMapping("/{folder}/{filename}")
-    public ResponseEntity<InputStreamResource> downloadFile(@PathVariable String folder, @PathVariable String filename){
+    public ResponseEntity<InputStreamResource> downloadFile(
+            @PathVariable String folder,
+            @PathVariable String filename
+    ){
         String filePath = folder + "/" + filename;
         InputStream stream = fileStorageService.downloadFile(filePath);
         return ResponseEntity.ok()

@@ -42,8 +42,16 @@ public class AuthController {
         if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())){
             throw new ResponseStatusException(UNAUTHORIZED, "Invalid credentials");
         }
-        String token = jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getRole().name());
-        return ResponseEntity.ok(new LoginResponseDto(token, user.getUsername(), user.getRole().name()));
+        String token = jwtTokenProvider.generateToken(
+                user.getId(),
+                user.getUsername(),
+                user.getRole().name()
+        );
+        return ResponseEntity.ok(new LoginResponseDto(
+                token,
+                user.getUsername(),
+                user.getRole().name())
+        );
     }
 
 }

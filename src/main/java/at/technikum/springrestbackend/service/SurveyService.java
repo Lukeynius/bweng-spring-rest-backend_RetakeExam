@@ -134,38 +134,14 @@ public class SurveyService {
     public void participate(UUID surveyId, UUID userId, SurveyParticipateDto dto){
         Survey survey = findEntityById(surveyId);
 
-        if(survey.getStatus() != SurveyStatus.ACTIVE){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Survey is not active");
-        }
-        if(surveyResponseRepository.existsByUserIdAndSurveyId(userId, surveyId)){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "You already participated in this survey");
-        }
+        validateParticipation(survey, userId);
 
         User user = userService.findEntityById(userId);
+
         SurveyResponse surveyResponse = new SurveyResponse();
         surveyResponse.setUser(user);
         surveyResponse.setSurvey(survey);
-        List<Answer> answers = new ArrayList<>();
-
-        for(Map.Entry<UUID, List<UUID>> entry : dto.getAnswers().entrySet()){
-            UUID questionId = entry.getKey();
-            List<UUID> optionIds = entry.getValue();
-            for(UUID optionId : optionIds){
-                Option option = optionRepository
-                        .findById(optionId)
-                        .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.BAD_REQUEST,
-                                "Option is not valid: " + optionId
-                        ));
-                Answer answer = new Answer();
-                answer.setSurveyResponse(surveyResponse);
-                answer.setQuestion(option.getQuestion());
-                answer.setSelectedOption(option);
-                answers.add(answer);
-            }
-        }
-
-        surveyResponse.setAnswers(answers);
+        surveyResponse.setAnswers(buildAnswers(dto, surveyResponse));
         surveyResponseRepository.save(surveyResponse);
     }
 
@@ -210,4 +186,43 @@ public class SurveyService {
         dto.setText(option.getText());
         return dto;       
     }
+
+    private void validateParticipation(Survey survey, UUID userId){
+        if(survey.getStatus() != SurveyStatus.ACTIVE){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Survey is not active"
+            );
+        }
+        if(surveyResponseRepository.existsByUserIdAndSurveyId(userId, survey.getId())){
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "You already participated in this survey"
+            );
+        }
+    }
+
+    private List<Answer> buildAnswers(SurveyParticipateDto dto, SurveyResponse surveyResponse){
+
+        List<Answer> answers = new ArrayList<>();
+
+        for(Map.Entry<UUID, List<UUID>> entry : dto.getAnswers().entrySet()){
+            List<UUID> optionIds = entry.getValue();
+            for(UUID optionId : optionIds){
+                Option option = optionRepository
+                        .findById(optionId)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Option is not valid: " + optionId
+                        ));
+                Answer answer = new Answer();
+                answer.setSurveyResponse(surveyResponse);
+                answer.setQuestion(option.getQuestion());
+                answer.setSelectedOption(option);
+                answers.add(answer);
+            }
+        }
+        return answers;
+    }
+
 }

@@ -38,7 +38,10 @@ public class UserController {
 
     //GET - single user
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getById(@PathVariable UUID id, Authentication authentication){
+    public ResponseEntity<UserResponseDto> getById(
+            @PathVariable UUID id,
+            Authentication authentication
+    ){
         checkOwnerOrAdmin(id, authentication);
         return ResponseEntity.ok(userService.findById(id));
     }
@@ -52,7 +55,11 @@ public class UserController {
 
     //PUT - update user
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDto dto, Authentication authentication){
+    public ResponseEntity<UserResponseDto> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody UserUpdateDto dto,
+            Authentication authentication
+    ){
         checkOwnerOrAdmin(id, authentication);
         return ResponseEntity.ok(userService.update(id, dto));
     }
@@ -67,9 +74,14 @@ public class UserController {
     //check
     private void checkOwnerOrAdmin(UUID id, Authentication authentication){
         UUID currentUserId = (UUID) authentication.getPrincipal();
-        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(
+                a -> a.getAuthority().equals("ROLE_ADMIN")
+        );
         if(!isAdmin && !id.equals(currentUserId)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You are not allowed to access this resource"
+            );
         }
     }
 }
