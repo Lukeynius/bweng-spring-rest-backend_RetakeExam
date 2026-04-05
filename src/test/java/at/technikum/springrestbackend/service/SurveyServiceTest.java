@@ -172,7 +172,6 @@ public class SurveyServiceTest {
 
         surveyService.participate(surveyId, userId, dto);
         verify(surveyResponseRepository).save(any());
-        //verify(answerRepository).saveAll(any());
     }
 
     @Test
@@ -195,6 +194,30 @@ public class SurveyServiceTest {
         when(surveyRepository.findById(surveyId)).thenReturn(Optional.of(testSurvey));
 
         assertThrows(ResponseStatusException.class, ()->surveyService.participate(surveyId, userId, dto));
+    }
+
+    @Test
+    void update_validData_updatesSurvey() {
+        SurveyCreateDto dto = new SurveyCreateDto();
+        dto.setTitle("Updated Title");
+        dto.setDescription("Updated Desc");
+
+        QuestionCreateDto qDto = new QuestionCreateDto();
+        qDto.setQuestion("New Q?");
+        qDto.setQuestionType(QuestionType.SINGLE_CHOICE);
+        qDto.setOptions(List.of("X", "Y"));
+        dto.setQuestions(List.of(qDto));
+
+        when(surveyRepository.findById(surveyId))
+                .thenReturn(Optional.of(testSurvey));
+        when(surveyRepository.save(any(Survey.class)))
+                .thenReturn(testSurvey);
+
+        SurveyResponseDto result =
+                surveyService.update(surveyId, dto);
+
+        assertNotNull(result);
+        verify(surveyRepository).save(any(Survey.class));
     }
 
 }

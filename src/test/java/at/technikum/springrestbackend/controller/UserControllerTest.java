@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,10 +29,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -125,4 +128,74 @@ public class UserControllerTest {
                         ))))
                         .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void getById_asOwner_returnsOk() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UserResponseDto dto = new UserResponseDto();
+        dto.setId(userId);
+        dto.setUsername("testuser");
+        dto.setEmail("test@example.com");
+        dto.setRole(Role.USER);
+
+        when(userService.findById(userId)).thenReturn(dto);
+
+        mockMvc.perform(get("/api/users/" + userId)
+                        .with(authentication(
+                                createAuth(userId, "ROLE_USER"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username")
+                        .value("testuser"));
+    }
+
+    @Test
+    void getById_asOtherUser_returnsForbidden()
+            throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID otherId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/users/" + userId)
+                        .with(authentication(
+                                createAuth(otherId, "ROLE_USER"))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void delete_asAdmin_returnsNoContent()
+            throws Exception {
+        UUID userId = UUID.randomUUID();
+        doNothing().when(userService).delete(userId);
+
+        mockMvc.perform(delete("/api/users/" + userId))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void update_asOwner_returnsOk() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UserResponseDto responseDto = new UserResponseDto();
+        responseDto.setId(userId);
+        responseDto.setUsername("updated");
+        responseDto.setRole(Role.USER);
+
+        when(userService.update(any(), any()))
+                .thenReturn(responseDto);
+
+        mockMvc.perform(put("/api/users/" + userId)
+                        .with(authentication(
+                                createAuth(userId, "ROLE_USER")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                Map.of("username", "updated"))))
+                .andExpect(status().isOk());
+    }
+
+    private UsernamePasswordAuthenticationToken
+    createAuth(UUID userId, String role) {
+        return new UsernamePasswordAuthenticationToken(
+                userId, null,
+                List.of(new SimpleGrantedAuthority(role)));
+    }
+
 }
